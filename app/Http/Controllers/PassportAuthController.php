@@ -46,8 +46,36 @@ class PassportAuthController extends Controller
         return response()->json(['user' => $user],200);
     }
 
-    public function update(){
+    public function update(Request $request) {
+        // Validate the request inputs
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string',
+            'email' => 'sometimes|required|email|unique:users,email,' . auth()->id(),
+            'password' => 'sometimes|required|min:6',
+        ]);
+
+        $keys = ['name', 'email', 'password'];
+        $updateData = [];
+
+        foreach ($keys as $key) {
+            if (isset($validatedData[$key])) {
+                $updateData[$key] = $key == 'password' ? bcrypt($validatedData[$key]) : $validatedData[$key];
+            }
+        }
+
+        if (empty($updateData)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No valid data provided for update',
+            ]);
+        }
+
         $user = auth()->user();
-        return response()->json(['user' => $user],200);
+        $user->update($updateData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+        ]);
     }
 }
