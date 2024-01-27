@@ -78,4 +78,30 @@ class PassportAuthController extends Controller
             'message' => 'User updated successfully',
         ]);
     }
+
+    public function delete(Request $request) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+
+        try {
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the user',
+            ], 500);
+        }
+    }
 }

@@ -21,4 +21,5 @@ Route::post('login', [PassportAuthController::class, 'login']);
 Route::middleware(['auth:api'])->group(function () {
     Route::get('show', [PassportAuthController::class, 'show']);
     Route::put('update', [PassportAuthController::class, 'update']);
+    Route::delete('delete', [PassportAuthController::class, 'delete']);
 });
