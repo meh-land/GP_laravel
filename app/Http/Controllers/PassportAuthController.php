@@ -26,10 +26,10 @@ class PassportAuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'token' => $token,
         ];
 
         return response()->json([
-            'token' => $token,
             'user' => $userData
         ], 200);
     }
@@ -48,10 +48,10 @@ class PassportAuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'token' => $token,
             ];
 
             return response()->json([
-                'token' => $token,
                 'user' => $userData
             ], 200);
         } else{
