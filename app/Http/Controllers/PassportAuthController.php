@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -70,14 +71,29 @@ class PassportAuthController extends Controller
             'name' => 'sometimes|required|string',
             'email' => 'sometimes|required|email|unique:users,email,' . auth()->id(),
             'password' => 'sometimes|required|min:6',
+            'old_password' => 'sometimes|required_with:password',
         ]);
+
+        $user = auth()->user();
+
+        // Check if old password is correct before updating to a new one
+        if (isset($validatedData['password'])) {
+            if (!Hash::check($validatedData['old_password'], $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Incorrect old password',
+                ]);
+            }
+
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        }
 
         $keys = ['name', 'email', 'password'];
         $updateData = [];
 
         foreach ($keys as $key) {
             if (isset($validatedData[$key])) {
-                $updateData[$key] = $key == 'password' ? bcrypt($validatedData[$key]) : $validatedData[$key];
+                $updateData[$key] = $validatedData[$key];
             }
         }
 
@@ -88,7 +104,6 @@ class PassportAuthController extends Controller
             ]);
         }
 
-        $user = auth()->user();
         $user->update($updateData);
 
         return response()->json([
@@ -98,6 +113,10 @@ class PassportAuthController extends Controller
     }
 
     public function delete(Request $request) {
+         // Validate the request inputs
+        $validatedData = $request->validate([
+            'old_password' => 'sometimes|required_with:password',
+        ]);
         $user = auth()->user();
 
         if (!$user) {
@@ -107,6 +126,12 @@ class PassportAuthController extends Controller
             ], 404);
         }
 
+        if (!Hash::check($validatedData['old_password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect old password',
+            ]);
+        }
 
         try {
             $user->delete();
