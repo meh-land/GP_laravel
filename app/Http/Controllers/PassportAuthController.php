@@ -7,11 +7,11 @@ use App\Models\User;
 
 class PassportAuthController extends Controller
 {
-        public function register(Request $request){
+    public function register(Request $request){
         $this->validate($request, [
-            'name'=>'required',
-            'email'=>'required',
-            'password'=>'required|min:8'
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8'
         ]);
 
         $user = User::create([
@@ -22,7 +22,16 @@ class PassportAuthController extends Controller
 
         $token = $user->createToken('gp')->accessToken;
 
-        return response()->json(['token'=>$token],200);
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+
+        return response()->json([
+            'token' => $token,
+            'user' => $userData
+        ], 200);
     }
 
     public function login(Request $request){
@@ -34,11 +43,20 @@ class PassportAuthController extends Controller
         if(auth()->attempt($data)){
             $user = auth()->user();
             $token = $user->createToken($user->name)->accessToken;
-            return response()->json(['token' => $token],200);
-        } else{
-            return response()->json(['error' => 'Unauthorized'],401);
-        }
 
+            $userData = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ];
+
+            return response()->json([
+                'token' => $token,
+                'user' => $userData
+            ], 200);
+        } else{
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
 
     public function show(){
