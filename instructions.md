@@ -5,7 +5,7 @@
 systemctl status apache2
 ```
 
-* make sure apache is running
+* make sure mysql is running
 ```bash
 systemctl status mysql
 ```
