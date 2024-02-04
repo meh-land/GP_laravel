@@ -12,14 +12,14 @@ class TestingController extends Controller
         $scriptPath = env('PUBLISHER_SCRIPT');
 
         // Extract the 'state' query parameter from the request
-        $argument = $request->query('state');
+        $argument = $request["x"];
 
         // Ensure the script path and argument are safely escaped for shell command
         $safeScriptPath = escapeshellarg($scriptPath);
         $safeArgument = escapeshellarg($argument);
 
         // Construct the command
-        $command = "python " . $safeScriptPath . " " . $safeArgument;
+        $command = "/bin/bash -c 'source /opt/ros/noetic/setup.bash  && source ~/my_ws/devel/setup.bash && rosrun torta_web_control button_pub.py hi3'";
 
         // Execute the command
         $result = shell_exec($command);

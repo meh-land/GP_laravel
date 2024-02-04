@@ -18,7 +18,7 @@ use App\Http\Controllers\TestingController;
 
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
-Route::get('test',  [TestingController::class, 'test']);
+Route::post('test',  [TestingController::class, 'test']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('show', [PassportAuthController::class, 'show']);
