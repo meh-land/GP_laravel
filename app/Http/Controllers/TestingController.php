@@ -19,9 +19,16 @@ class TestingController extends Controller
         $safeArgument = escapeshellarg($argument);
 
         // Construct the command
-        $command = "/bin/bash -c 'source /opt/ros/noetic/setup.bash  && source ~/my_ws/devel/setup.bash && rosrun torta_web_control button_pub.py hello'";
-
+        //$command = "/bin/bash -c 'source /opt/ros/noetic/setup.bash  && source ~/my_ws/devel/setup.bash && rosrun torta_web_control button_pub.py hello'";
+        $VAR = 'test';
+        $command = "echo $".$VAR;
         // Execute the command
+        $result = shell_exec($command);
+        return $result;
+    }
+
+    public function Get_IP(){
+        $command = 'ifconfig enp0s3 | grep "inet " | awk \'{print $2}\'';
         $result = shell_exec($command);
         return $result;
     }

@@ -22,6 +22,7 @@ Route::post('test',  [TestingController::class, 'test']);
 Route::post('position_test',  [TestingController::class, 'position_test']);
 Route::post('velocity_test',  [TestingController::class, 'velocity_test']);
 Route::post('PID_test',  [TestingController::class, 'PID_test']);
+Route::get('Get_IP',  [TestingController::class, 'Get_IP']);
 
 
 Route::middleware(['auth:api'])->group(function () {
