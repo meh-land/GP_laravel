@@ -59,6 +59,7 @@ class TestingController extends Controller
     public function velocity_test(Request $request) {
         // Get the Python script path from the .env file
         $scriptPath = env('VELOCITY_SCRIPT');
+        $command = env('SHELL_CMD');
 
         // Extract the 'x', 'y', and 'theta' parameters from the request
         $x = $request['x'];
@@ -72,7 +73,10 @@ class TestingController extends Controller
         $Theta = escapeshellarg($theta);
 
         // Construct the command
-        $command = "/bin/bash -c 'source /opt/ros/noetic/setup.bash  && source ~/my_ws/devel/setup.bash && rosrun torta_web_control $ScriptPath $X $Y $Theta'";
+        $command = str_replace('$ScriptPath', $scriptPath, $command);
+        $command = str_replace('$a', $X, $command);
+        $command = str_replace('$b', $Y, $command);
+        $command = str_replace('$c', $Theta, $command);
 
         // Execute the command
         $result = shell_exec($command);
