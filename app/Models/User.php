@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Robot::class);
     }
+
+    public function maps()
+    {
+        return $this->hasMany(Maps::class);
+    }
 }
