@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PassportAuthController;
 use App\Http\Controllers\RobotController;
 use App\Http\Controllers\TestingController;
+use App\Http\Controllers\MapsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +37,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('getRobots', [RobotController::class,'getRobots']);
     Route::delete('deleteRobot', [RobotController::class,'deleteRobot']);
 
+    Route::post('createMap',  [MapsController::class, 'create']);
+    Route::get('getMap', [MapsController::class,'getMap']);
 
 });
