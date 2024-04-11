@@ -20,7 +20,7 @@ class MapsController extends Controller
         return response()->json($maps);
     }
 
-    public function create(Request $request){
+    public function createMap(Request $request){
         // Ensure there's an authenticated user
         $user = Auth::user();
         if (!$user) {
@@ -64,11 +64,10 @@ class MapsController extends Controller
         return response()->json($maps, 201);
     }
 
-    public function getMap(Request $request)
+    public function getMap($mapId)
     {
-        $name = $request->name;
-        // Find the map by name or return a 404 error if not found
-        $map = Maps::where('name', $name)->firstOrFail();
+        // Find the map by id or return a 404 error if not found
+        $map = Maps::where('id', $mapId)->firstOrFail();
 
         // Define the path to the file
         $path = 'maps/' . $map->file;
@@ -113,6 +112,56 @@ class MapsController extends Controller
             'message' => 'Map deleted successfully',
             'remainingMaps' => $maps
         ], 200);
+    }
+
+    public function editMap(Request $request, $mapId)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Not authenticated'], 401);
+        }
+
+        // Find the map owned by the user with the given ID or return a 404 error if not found
+        $map = Maps::where('id', $mapId)->where('user_id', $user->id)->firstOrFail();
+
+        $oldPath = 'maps/' . $map->file;
+
+        // Check if name is provided and different from the current name
+        if ($request->has('name') && $map->name !== $request->name) {
+            $map->name = $request->name;
+            
+            // Generate a new filename based on the updated name
+            $safeName = preg_replace('/[^A-Za-z0-9\-_]/', '', $request->name);
+            $newFilename = $safeName . '.json';
+            $newPath = 'maps/' . $newFilename;
+
+            // Rename the file in storage if it exists
+            if (Storage::disk('local')->exists($oldPath)) {
+                Storage::disk('local')->move($oldPath, $newPath);
+            }
+
+            // Update the filename in the database
+            $map->file = $newFilename;
+        }
+
+        // Update the map file with new nodes and edges if provided
+        if ($request->has('nodes') && $request->has('edges')) {
+            $mapContent = json_encode([
+                'name' => $request->name,
+                'nodes' => $request->nodes,
+                'edges' => $request->edges,
+            ]);
+
+            // Use the current or new path depending on if the name (and thus filename) was changed
+            $pathToUpdate = isset($newPath) ? $newPath : $oldPath;
+
+            // Overwrite the existing or new .json file with updated content
+            Storage::disk('local')->put($pathToUpdate, $mapContent);
+        }
+
+        $map->save(); // Save the updated map record
+
+        return response()->json($map, 200);
     }
 
 }
