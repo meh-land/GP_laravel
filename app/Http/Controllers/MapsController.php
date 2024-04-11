@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Storage;
 
 class MapsController extends Controller
 {
+    public function getMaps(){
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Not authenticated'], 401); 
+        }
+
+        $maps = $user->maps;
+        return response()->json($maps);
+    }
+
     public function create(Request $request){
         // Ensure there's an authenticated user
         $user = Auth::user();
@@ -74,4 +84,35 @@ class MapsController extends Controller
         // Return the content of the map file as JSON
         return response()->json(json_decode($content, true));
     }
+
+    public function deleteMap(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Not authenticated'], 401);
+        }
+
+        $mapId = $request->id;
+        // Find the map owned by the user with the given name or return a 404 error if not found
+        $map = Maps::where('id', $mapId)->where('user_id', $user->id)->first();
+
+        // Define the path to the file
+        $path = 'maps/' . $map->file;
+
+        // Check if the file exists and delete it
+        if (Storage::disk('local')->exists($path)) {
+            Storage::disk('local')->delete($path);
+        }
+
+        // Delete the map record from the database
+        $map->delete();
+
+        $maps = $user->maps;
+        // Return a success response
+        return response()->json([
+            'message' => 'Map deleted successfully',
+            'remainingMaps' => $maps
+        ], 200);
+    }
+
 }
