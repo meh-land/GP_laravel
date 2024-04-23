@@ -18,6 +18,7 @@ class RobotController extends Controller
         $robot = new Robot();
         $robot->name = $request->name;
         $robot->user_id = $user->id; 
+        $robot->IP = $request->IP;
         $robot->save();
 
         $robots = $user->robots; 
