@@ -6,6 +6,7 @@ use App\Http\Controllers\PassportAuthController;
 use App\Http\Controllers\RobotController;
 use App\Http\Controllers\TestingController;
 use App\Http\Controllers\MapsController;
+use App\Http\Controllers\TasksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,5 +43,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('editMap/{mapId}',  [MapsController::class, 'editMap']);
     Route::get('getMap/{mapId}', [MapsController::class,'getMap']);
     Route::delete('deleteMap', [MapsController::class,'deleteMap']);
+
+    Route::post('createTask',  [TasksController::class, 'create']);
+    Route::get('getTasks', [TasksController::class,'getTasks']);
+
 
 });

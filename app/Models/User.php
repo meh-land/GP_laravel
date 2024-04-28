@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Maps::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Tasks::class);
+    }
 }
