@@ -46,6 +46,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('createTask',  [TasksController::class, 'create']);
     Route::get('getTasks', [TasksController::class,'getTasks']);
+    Route::delete('deleteTask', [TasksController::class,'deleteTask']);
+
 
 
 });
