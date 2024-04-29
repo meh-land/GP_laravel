@@ -37,6 +37,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('createRobot',  [RobotController::class, 'create']);
     Route::get('getRobots', [RobotController::class,'getRobots']);
     Route::delete('deleteRobot', [RobotController::class,'deleteRobot']);
+    Route::put('editRobot', [RobotController::class,'editRobot']);
+
 
     Route::get('getMaps', [MapsController::class,'getMaps']);
     Route::post('createMap',  [MapsController::class, 'createMap']);

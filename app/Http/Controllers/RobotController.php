@@ -65,4 +65,38 @@ class RobotController extends Controller
             'remainingRobots' => $robots
         ], 200);
     }
+
+    public function editRobot(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Not authenticated'], 401);
+        }
+
+        $robotId = $request->Robot_id;
+
+        if (!$robotId) {
+            return response()->json(['message' => 'Robot ID is required'], 400);
+        }
+
+        $robot = Robot::where('id', $robotId)->where('user_id', $user->id)->first();
+
+        if (!$robot) {
+            return response()->json(['message' => 'Robot not found or access denied'], 404);
+        }
+
+        // Update the robot details from the request
+        $robot->name =  $request->name;
+        $robot->IP = $request->IP;
+
+        $robot->save();
+
+        $robots = $user->robots;
+
+        return response()->json([
+            'message' => 'Robot updated successfully',
+            'robots' => $robots
+        ], 200);
+    }
 }
