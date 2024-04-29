@@ -31,15 +31,11 @@ class TasksController extends Controller
     public function getTasks() {
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['message' => 'Not authenticated'], 401);
+            return response()->json(['message' => 'Not authenticated'], 401); 
         }
 
-        $tasks = $user->tasks; // Use the defined relationship
-        if (is_null($tasks) || $tasks->isEmpty()) {
-            return response()->json(['message' => 'No tasks found'], 200); // Return a clear message if no tasks found
-        }
-
-        return response()->json($tasks); // Return the tasks as JSON
+        $tasks = $user->tasks;
+        return response()->json($tasks);
     }
 
     public function deleteTask(Request $request) {
