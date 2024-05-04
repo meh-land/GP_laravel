@@ -28,6 +28,40 @@ class TasksController extends Controller
 
         $tasks = $user->tasks; 
 
+        foreach ($tasks as &$task) {
+            $mapId = $task->map;
+            $map = Maps::where('id', $mapId)->firstOrFail();
+
+            // Define the path to the file
+            $path = 'maps/' . $map->file;
+
+            // Check if the file exists
+            if (!Storage::disk('local')->exists($path)) {
+                return response()->json(['message' => 'File not found'], 404);
+            }
+
+            // Read the content of the file
+            $content = Storage::disk('local')->get($path);
+            $mapData = json_decode($content, true);
+
+            // Build an associative array of node ID to node name
+            $nodeLabels = [];
+            foreach ($mapData['nodes'] as $node) {
+                $nodeLabels[$node['id']] = $node['data']['label'];
+            }
+
+            // Set map to map name
+            $task->map = $map->name;
+            // Replace pickupNode
+            if (isset($nodeLabels[$task->pickupNode])) {
+                $task->pickupNode = $nodeLabels[$task->pickupNode];
+            }
+            // Replace dropoffNode
+            if (isset($nodeLabels[$task->dropoffNode])) {
+                $task->dropoffNode = $nodeLabels[$task->dropoffNode];
+            }
+        }
+
         return response()->json($tasks, 201); // Return the created task with a 201 status
     }
 
