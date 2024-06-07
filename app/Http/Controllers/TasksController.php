@@ -64,7 +64,7 @@ public function create(Request $request) {
         }
 
         // Save updated task to a file in storage
-        $taskFileName = 'tasks/' . $task->TASK . '.json';
+        $taskFileName = 'tasks/' . $task->name . '.json';
         Storage::disk('local')->put($taskFileName, json_encode($task));
     }
 
