@@ -89,10 +89,13 @@ class RobotController extends Controller
         // Update the robot details from the request
         $robot->name =  $request->name;
         $robot->IP = $request->IP;
+        $robot->task_name = $request->task_Name;
+        $robot->task_id = $request->Task_id;
 
         $robot->save();
 
         $robots = $user->robots;
+
 
         return response()->json([
             'message' => 'Robot updated successfully',

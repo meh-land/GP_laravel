@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('IP');
             $table->unsignedBigInteger('user_id');
+            $table->string('task_name')->nullable();;
+            $table->unsignedBigInteger('task_id')->nullable();;
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
