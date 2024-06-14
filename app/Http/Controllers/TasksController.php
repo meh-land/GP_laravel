@@ -135,6 +135,12 @@ public function create(Request $request) {
             return response()->json(['message' => 'Task not found or access denied'], 404); // Handle not found or unauthorized
         }
 
+        // Delete the related file if it exists
+        $taskFileName = 'tasks/' . $task->name . '.json';
+        if (Storage::disk('local')->exists($taskFileName)) {
+            Storage::disk('local')->delete($taskFileName);
+        }
+
         $task->delete();
 
         $remainingTasks = $user->tasks; // Retrieve remaining tasks after deletion
